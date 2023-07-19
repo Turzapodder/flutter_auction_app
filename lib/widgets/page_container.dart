@@ -3,6 +3,7 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 
 import '../screens/home_page.dart';
+import '../screens/profile_page.dart';
 
 class PageContainer extends StatefulWidget {
   const PageContainer({Key? key}) : super(key: key);
@@ -65,18 +66,3 @@ class DashboardPage extends StatelessWidget {
 
 
 
-
-class ProfilePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'Profile Page',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 24,
-        ),
-      ),
-    );
-  }
-}

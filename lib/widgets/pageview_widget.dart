@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import '../const/colors.dart';
+import '../screens/product_page.dart';
 
 class MyPageView extends StatefulWidget {
   @override
@@ -14,6 +15,13 @@ class _MyPageViewState extends State<MyPageView> {
   double _currentPage = 0;
   double viewport = 0.8;
   double pageOffset = 0;
+
+  String image= "assets/images/product1.png";
+      String name= "Air Jordan";
+  double price= 180.0;
+  String author= "@TurjhaPodder";
+
+
   @override
   void initState() {
     super.initState();
@@ -43,122 +51,132 @@ class _MyPageViewState extends State<MyPageView> {
       itemBuilder: (BuildContext context, int index) {
         double scale =
             max(viewport, (1 - (pageOffset - index).abs()) + viewport);
-        return Container(
-            padding: EdgeInsets.only(
-              right: 30,
-              top: 100 - scale * 35,
-              bottom: 50,
-            ),
-            child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  color: AppColor.secondary,
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColor.secondary.withOpacity(0.20),
-                      spreadRadius: 8,
-                      offset: Offset(2, 3),
-                      blurRadius: 15,
-                    ),
-                  ]),
+        return InkWell(
+          onTap: (){
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) =>  ProductPage(
+                image: image, name: name, price: price, author: author,
+              )),
+            );
+          },
+          child: Container(
+              padding: EdgeInsets.only(
+                right: 30,
+                top: 100 - scale * 35,
+                bottom: 50,
+              ),
               child: Container(
-                padding: EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      width: 150,
-                      height: 35,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
-                          color: AppColor.primary),
-                      child: Center(
-                        child: Text(
-                          "02:12:34:56",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18),
-                        ),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    color: AppColor.secondary,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColor.secondary.withOpacity(0.20),
+                        spreadRadius: 8,
+                        offset: Offset(2, 3),
+                        blurRadius: 15,
                       ),
-                    ),
-                    Center(
-                      child: Container(
-                        height: 150,
+                    ]),
+                child: Container(
+                  padding: EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
                         width: 150,
-                        child: Image.asset(
-                          "assets/images/product1.png",
-                          fit: BoxFit.cover,
+                        height: 35,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            color: AppColor.primary),
+                        child: Center(
+                          child: Text(
+                            "02:12:34:56",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18),
+                          ),
                         ),
                       ),
-                    ),
-                    Container(
-                      width: double.infinity,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const [
-                              Expanded(
-                                child: Text(
-                                  "Air Jordan",
-                                  style: TextStyle(
-                                      fontSize: 18, fontWeight: FontWeight.bold),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                ),
-                              ),
-
-                              Text(
-                                "starts \$180",
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.redAccent,
-                                    fontWeight: FontWeight.bold),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
+                      Center(
+                        child: Container(
+                          height: 150,
+                          width: 150,
+                          child: Image.asset(
+                            "assets/images/product1.png",
+                            fit: BoxFit.cover,
                           ),
-                          RichText(
-                            text: TextSpan(
-                              style: DefaultTextStyle.of(context).style,
-                              children: const <TextSpan>[
-                                TextSpan(
-                                  text: 'Posted by',
-                                ),
-                                TextSpan(
-                                  text: ' @TurjhaPodder',
-                                  style: TextStyle(
-                                    decoration: TextDecoration.underline,
+                        ),
+                      ),
+                      Container(
+                        width: double.infinity,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: const [
+                                Expanded(
+                                  child: Text(
+                                    "Air Jordan",
+                                    style: TextStyle(
+                                        fontSize: 18, fontWeight: FontWeight.bold),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
                                   ),
+                                ),
+
+                                Text(
+                                  "starts \$180",
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.redAccent,
+                                      fontWeight: FontWeight.bold),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ],
                             ),
-                          )
-                        ],
-                      ),
-                    ),
-                    Container(
-                      height: 40,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
-                          color: AppColor.primary,
-                          border: Border.all(width: 2)),
-                      child: Center(
-                        child: Text(
-                          "Place Bid",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.white),
+                            RichText(
+                              text: TextSpan(
+                                style: DefaultTextStyle.of(context).style,
+                                children: const <TextSpan>[
+                                  TextSpan(
+                                    text: 'Posted by',
+                                  ),
+                                  TextSpan(
+                                    text: ' @TurjhaPodder',
+                                    style: TextStyle(
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
                         ),
                       ),
-                    )
-                  ],
+                      Container(
+                        height: 40,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            color: AppColor.primary,
+                            border: Border.all(width: 2)),
+                        child: Center(
+                          child: Text(
+                            "Place Bid",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, color: Colors.white),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              ),
-            ));
+              )),
+        );
       },
     );
   }

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:auctionapp/const/colors.dart';
 import 'package:auctionapp/screens/add_item.dart';
+import 'package:auctionapp/screens/product_page.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/pageview_widget.dart';
@@ -14,7 +15,15 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<String> items = ["All", "Gadget", "Art", "Toys", "Cars", "Shoes", "Misc"];
+  List<String> items = [
+    "All",
+    "Gadget",
+    "Art",
+    "Toys",
+    "Cars",
+    "Shoes",
+    "Misc"
+  ];
   int current = 0;
   @override
   Widget build(BuildContext context) {
@@ -36,7 +45,7 @@ class _HomePageState extends State<HomePage> {
                       color: Colors.white),
                 ),
                 InkWell(
-                  onTap: (){
+                  onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => const AddItem()),
@@ -117,12 +126,20 @@ class _HomePageState extends State<HomePage> {
                         width: 70,
                         height: 30,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
-                             color: current==index? AppColor.green: Colors.white70.withOpacity(0.5)),
+                            borderRadius: BorderRadius.circular(30),
+                            color: current == index
+                                ? AppColor.green
+                                : Colors.white70.withOpacity(0.5)),
                         child: Center(
-                          child: Text(items[index], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12,
-                            color: current==index? AppColor.primary: Colors.white
-                          ),),
+                          child: Text(
+                            items[index],
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                                color: current == index
+                                    ? AppColor.primary
+                                    : Colors.white),
+                          ),
                         ),
                       ),
                     );
@@ -131,15 +148,13 @@ class _HomePageState extends State<HomePage> {
             SizedBox(
               height: 20,
             ),
-            Expanded(child: current%2!=0?
-            MyPageView(): Container())
-
+            Expanded(
+                child: current % 2 != 0
+                    ? MyPageView()
+                    : Container())
           ],
         ),
       ),
     );
   }
 }
-
-
-

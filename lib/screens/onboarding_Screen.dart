@@ -21,9 +21,9 @@ class OnboardingScreen extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(30)),
                 child: SizedBox(
-                  width: 300,
-                  height: 240,
-                  child: Image.asset("assets/images/img1.png", height: 200, width: 300, fit: BoxFit.cover,),
+                  width: 240,
+                  height: 180,
+                  child: Image.asset("assets/images/img3.png", height: 200, width: 300, fit: BoxFit.cover,),
                 ),
               ),
             ),
@@ -34,23 +34,23 @@ class OnboardingScreen extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.all(Radius.circular(30)),
               child: SizedBox(
-                width: 350,
-                height: 280,
+                width: 300,
+                height: 220,
                 child: Image.asset("assets/images/img2.jpg", height: 200, width: 300, fit: BoxFit.cover,),
               ),
             ),
           ), //Container
           Positioned(
-            top: 500,
+            top: 480,
             right: -50,
             child: Transform.rotate(
               angle: 50,
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(30)),
                 child: SizedBox(
-                  height: 240,
-                  width: 300,
-                  child: Image.asset("assets/images/img3.png", fit: BoxFit.cover,),
+                  height: 180,
+                  width: 240,
+                  child: Image.asset("assets/images/img1.png", fit: BoxFit.cover,),
                 ),
               ),
             ),
