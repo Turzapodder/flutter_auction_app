@@ -2,6 +2,7 @@
 import 'package:auctionapp/const/colors.dart';
 import 'package:flutter/material.dart';
 
+
 class ProductPage extends StatefulWidget {
   final String image;
   final String name;

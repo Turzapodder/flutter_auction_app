@@ -77,7 +77,9 @@ class _AddItemState extends State<AddItem> {
         leading: Padding(
           padding: const EdgeInsets.only(left: 10.0),
           child: IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pop(context);
+            },
             icon: Icon(
               Icons.arrow_back,
               color: AppColor.green,

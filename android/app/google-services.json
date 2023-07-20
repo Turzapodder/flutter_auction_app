@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1035333279227",
+    "project_id": "bidart-33db3",
+    "storage_bucket": "bidart-33db3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1035333279227:android:945f70c875eafd6b0d3f5e",
+        "android_client_info": {
+          "package_name": "com.example.auctionapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1035333279227-q3t9mptgllq2ma0b8rdvsapjdcg35290.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZYQAnSZVri-EmHEtXeXWPuIyS4vTOYUg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1035333279227-1tkn7b5b8761783jpbbicpufpnjm6rij.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

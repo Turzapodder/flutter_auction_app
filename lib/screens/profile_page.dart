@@ -1,6 +1,7 @@
 
 
 import 'package:auctionapp/const/colors.dart';
+import 'package:auctionapp/utils/shared_preferences.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/Profile_item_containers.dart';
@@ -14,6 +15,8 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   bool _isPostedSelected = true;
+  final String? userName = SharedPreferenceHelper().getUserName();
+  final String? userEmail = SharedPreferenceHelper().getEmail();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,7 +47,7 @@ class _ProfilePageState extends State<ProfilePage> {
               SizedBox(
                 height: 20,
               ),
-              Text("Turjha Podder", style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),),
+              Text("$userName", style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),),
               SizedBox(
                 height: 10,
               ),
@@ -54,7 +57,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   Icon(Icons.email, color: AppColor.green,size: 15,),
                   SizedBox(width: 8,),
-                  Text("Write2Turza@gmail.com", style: TextStyle(color: Colors.white),)
+                  Text("$userEmail", style: TextStyle(color: Colors.white),)
                 ],
               ),
               SizedBox(

@@ -45,7 +45,7 @@ class OwnedContainer extends StatelessWidget {
         ),
         child: ListView.separated(
           shrinkWrap: true,
-          itemCount: 10,
+          itemCount: 3,
           separatorBuilder: (context, index) => Divider(
             color: Colors.white,
           ),

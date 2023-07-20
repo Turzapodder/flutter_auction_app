@@ -1,9 +1,51 @@
 import 'package:auctionapp/const/colors.dart';
+import 'package:auctionapp/utils/shared_preferences.dart';
 import 'package:auctionapp/widgets/page_container.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
+
+
+  /* shared preference functions to store username and email */
+  Future<void> saveUserName(String? name) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userName', name!);
+  }
+
+  Future<void> saveEmail(String? email) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userEmail', email!);
+  }
+  /*-----------------------------------------*/
+
+  /* Google Authentication and login function */
+  signInWithGoogle(BuildContext context) async{
+    final GoogleSignInAccount? gUser= await GoogleSignIn().signIn();
+
+    final GoogleSignInAuthentication? gAuth= await gUser!.authentication;
+
+    final credential = GoogleAuthProvider.credential(
+      accessToken: gAuth?.accessToken,
+      idToken: gAuth?.idToken,
+    );
+    UserCredential user = await FirebaseAuth.instance.signInWithCredential(credential);
+
+     saveUserName(user.user?.displayName);
+     saveEmail(user.user?.email);
+    
+    print(SharedPreferenceHelper);
+
+
+    if(user.user!=null){
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
+          builder: (context) => PageContainer()), (Route route) => false);
+    }
+  }
+  /*--------------------------------------------------*/
 
   @override
   Widget build(BuildContext context) {
@@ -26,10 +68,11 @@ class LoginPage extends StatelessWidget {
               ),
               InkWell(
                 onTap: (){
-                  Navigator.push(
+                  /*Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const PageContainer()),
-                  );
+                  );*/
+                  signInWithGoogle(context);
                 },
                 child: Container(
                   height: 50,
