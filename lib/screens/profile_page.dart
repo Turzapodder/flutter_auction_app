@@ -1,7 +1,5 @@
-
-
 import 'package:auctionapp/const/colors.dart';
-import 'package:auctionapp/utils/shared_preferences.dart';
+import 'package:auctionapp/const/shared_preferences.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/Profile_item_containers.dart';
@@ -17,6 +15,7 @@ class _ProfilePageState extends State<ProfilePage> {
   bool _isPostedSelected = true;
   final String? userName = SharedPreferenceHelper().getUserName();
   final String? userEmail = SharedPreferenceHelper().getEmail();
+  final String? userBal = SharedPreferenceHelper().getBalance();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,25 +28,38 @@ class _ProfilePageState extends State<ProfilePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
-                height: 60,
+                height: 30,
               ),
-              Stack(
-                children: [
-                 CircleAvatar(
-                      radius: 40,
-                      backgroundColor: AppColor.green,
-                      child: Image.asset("assets/images/avatar2.png", fit: BoxFit.cover,),
-                    ),
-                  Positioned(
-                      top: 0,
-                      right: 120,
-                      child: Icon(Icons.verified, color: Colors.white,))
-                ],
+              Align(
+                alignment: Alignment.topRight,
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 3, horizontal: 15),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    color: AppColor.green,
+                  ),
+                  child: Text("Balance: \$${userBal}", style: TextStyle(fontWeight: FontWeight.bold),),
+                ),
               ),
+              SizedBox(
+                height: 30,
+              ),
+              CircleAvatar(
+                   radius: 40,
+                   backgroundColor: AppColor.green,
+                   child: Image.asset("assets/images/avatar2.png", fit: BoxFit.cover,),
+                 ),
               SizedBox(
                 height: 20,
               ),
-              Text("$userName", style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("$userName", style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),),
+                  SizedBox(width: 8,),
+                  Icon(Icons.verified, color: AppColor.green,)
+                ],
+              ),
               SizedBox(
                 height: 10,
               ),
@@ -94,7 +106,6 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               SizedBox(height: 20),
               _isPostedSelected ? PostedContainer() : OwnedContainer(),
-
             ],
           ),
         ),

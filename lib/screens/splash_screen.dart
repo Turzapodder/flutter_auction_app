@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:auctionapp/const/colors.dart';
 import 'package:flutter/material.dart';
 
 
@@ -26,12 +27,12 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
+      backgroundColor: AppColor.primary,
       body: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset('assets/images/logo (2).png', width: 80, height: 80,),
-          ],
+        child: Container(
+          width: double.infinity,
+          height: 150,
+          child: Image.asset('assets/images/bidart.png',fit: BoxFit.cover,),
         ),
       ),
     );

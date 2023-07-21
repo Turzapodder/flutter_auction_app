@@ -1,8 +1,14 @@
 import 'dart:io';
 
 import 'package:auctionapp/const/colors.dart';
+import 'package:auctionapp/const/shared_preferences.dart';
 import 'package:auctionapp/utils/common_widgets/textfield_widget.dart';
+import 'package:auctionapp/utils/server/Firebase_store_fetch.dart';
+import 'package:auctionapp/widgets/page_container.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AddItem extends StatefulWidget {
@@ -18,6 +24,13 @@ class _AddItemState extends State<AddItem> {
   DateTime dateTime = DateTime(2023, 07, 19, 3, 24);
   TextEditingController datecontroller = TextEditingController();
   String dropdownValue = 'Gadget';
+  final String? userName = SharedPreferenceHelper().getUserName();
+  final String? userEmail = SharedPreferenceHelper().getEmail();
+  final FirestoreService _firestoreService = FirestoreService();
+
+  TextEditingController Controller1 = TextEditingController();
+  TextEditingController Controller2 = TextEditingController();
+  TextEditingController Controller3 = TextEditingController();
 
   Future getImage() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -27,6 +40,13 @@ class _AddItemState extends State<AddItem> {
         _image = File(pickedFile.path);
       }
     });
+  }
+  @override
+  void dispose() {
+    Controller1.dispose();
+    Controller2.dispose();
+    Controller3.dispose();
+    super.dispose();
   }
 
   Future pickDateTime() async {
@@ -66,6 +86,10 @@ class _AddItemState extends State<AddItem> {
   String _formatNumber(int number) {
     return number.toString().padLeft(2, '0');
   }
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +170,7 @@ class _AddItemState extends State<AddItem> {
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: const [
                       Text(
                         "Add item photo",
                         style: TextStyle(color: Colors.white, fontSize: 16),
@@ -167,6 +191,7 @@ class _AddItemState extends State<AddItem> {
                 hinttext: "Enter Your Product Name",
                 type: TextInputType.text,
                 size: 5.0,
+                controller: Controller1,
               ),
               SizedBox(
                 height: 20,
@@ -174,8 +199,9 @@ class _AddItemState extends State<AddItem> {
               CustomTextfield(
                 label: 'Product Description',
                 hinttext: "Describe your product",
-                type: TextInputType.text,
+                type: TextInputType.multiline,
                 size: 100.0,
+                controller: Controller2,
               ),
               SizedBox(
                 height: 20,
@@ -185,6 +211,7 @@ class _AddItemState extends State<AddItem> {
                 hinttext: "Minimum Bid Price",
                 type: TextInputType.number,
                 size: 5.0,
+                controller: Controller3,
               ),
               SizedBox(
                 height: 20,
@@ -238,6 +265,7 @@ class _AddItemState extends State<AddItem> {
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: DropdownButton<String>(
                     value: dropdownValue,
+                    dropdownColor: AppColor.primary,
                     icon: Icon(Icons.arrow_drop_down),
                     iconSize: 24,
                     elevation: 16,
@@ -270,14 +298,29 @@ class _AddItemState extends State<AddItem> {
               SizedBox(
                 height: 20,
               ),
-              Container(
-                width: double.infinity,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: AppColor.green,
-                  borderRadius: BorderRadius.circular(30),
+              InkWell(
+                onTap: (){
+                  _firestoreService.uploadAuctionData(
+                    context,
+                    Controller1.text,
+                    dropdownValue,
+                    Controller3.text,
+                    dateTime,
+                    Controller2.text,
+                    userName!,
+                    userEmail!,
+                    _image!,
+                  );
+                },
+                child: Container(
+                  width: double.infinity,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: AppColor.green,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Center(child: Text("Add your product", style: TextStyle(color: AppColor.primary, fontWeight: FontWeight.bold),)),
                 ),
-                child: Center(child: Text("Add your product", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),)),
               )
             ],
           ),

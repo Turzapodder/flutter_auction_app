@@ -1,26 +1,14 @@
 import 'package:auctionapp/const/colors.dart';
-import 'package:auctionapp/utils/shared_preferences.dart';
+import 'package:auctionapp/const/shared_preferences.dart';
 import 'package:auctionapp/widgets/page_container.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:auctionapp/const/shared_preferences.dart';
 
 class LoginPage extends StatelessWidget {
-  const LoginPage({Key? key}) : super(key: key);
+   const LoginPage({Key? key}) : super(key: key);
 
-
-  /* shared preference functions to store username and email */
-  Future<void> saveUserName(String? name) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('userName', name!);
-  }
-
-  Future<void> saveEmail(String? email) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('userEmail', email!);
-  }
-  /*-----------------------------------------*/
 
   /* Google Authentication and login function */
   signInWithGoogle(BuildContext context) async{
@@ -34,8 +22,9 @@ class LoginPage extends StatelessWidget {
     );
     UserCredential user = await FirebaseAuth.instance.signInWithCredential(credential);
 
-     saveUserName(user.user?.displayName);
-     saveEmail(user.user?.email);
+    SharedPreferenceHelper().saveUserName(user.user?.displayName);
+    SharedPreferenceHelper().saveEmail(user.user?.email);
+    SharedPreferenceHelper().saveBalance("10000");
     
     print(SharedPreferenceHelper);
 

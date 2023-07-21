@@ -6,11 +6,13 @@ class CustomTextfield extends StatelessWidget {
   final hinttext;
   final type;
   final size;
+  final TextEditingController controller;
   const CustomTextfield({
     required this.label,
     required this.hinttext,
     required this.type,
     required this.size,
+    required this.controller,
 
     Key? key}) : super(key: key);
 
@@ -21,8 +23,11 @@ class CustomTextfield extends StatelessWidget {
       children: [
         Text(label, style: TextStyle(color: AppColor.green),),
         TextField(
-
+          controller: controller,
           keyboardType: type,
+          maxLines: null,
+
+          style: TextStyle(color: Colors.white),
           decoration: InputDecoration(
             contentPadding: EdgeInsets.only(top:5.0, left:10.0,bottom: size),
             hintText: hinttext,
