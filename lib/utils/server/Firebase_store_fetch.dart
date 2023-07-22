@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:auctionapp/const/colors.dart';
+import 'package:auctionapp/const/shared_preferences.dart';
 import 'package:auctionapp/widgets/page_container.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,6 +11,7 @@ import '../common_methods/methods.dart';
 class FirestoreService {
 
   CommonMethods methods = CommonMethods();
+
 
 
   Future<void> uploadAuctionData(
@@ -37,7 +39,6 @@ class FirestoreService {
 
       final userDocument = userCollection.doc('$product_name-$author_email');
 
-      // Set the data in the document
       await userDocument.set({
         'product_name': product_name,
         'type': type,
@@ -60,6 +61,62 @@ class FirestoreService {
 
     } catch (e) {
       print('Error uploading auction data: $e');
+    }
+  }
+
+  Future<void> placeBid(
+      String productID,
+      String bidderName,
+      String biddingPrice,
+      String balance,
+      ) async {
+    try {
+      double bidAmount = double.parse(biddingPrice);
+      double currentBalance = double.parse(balance);
+
+      if (bidAmount <= currentBalance) {
+        double remainingBalance = currentBalance - bidAmount;
+        if (remainingBalance < 0) {
+          methods.showSimpleToast("Insufficient Balance!");
+          return;
+        }
+
+        final CollectionReference bidsCollection =
+        FirebaseFirestore.instance.collection('Bids');
+
+        DocumentReference newBidDocRef = bidsCollection.doc();
+
+        Map<String, dynamic> bidData = {
+          'product-id': productID,
+          'Bidder_name': bidderName,
+          'Bidding_price': bidAmount,
+          'Bidding_date': DateTime.now(),
+        };
+
+        await newBidDocRef.set(bidData);
+
+        methods.showSimpleToast("Bid placed Successfully!");
+
+        SharedPreferenceHelper().saveBalance2(remainingBalance.toString());
+
+      } else {
+        methods.showSimpleToast('Bidding price is greater than the available balance.');
+      }
+    } catch (e) {
+      print('Error placing bid: $e');
+    }
+  }
+
+  Future<void> updateStatusToCompleted(String documentID) async {
+    try {
+      final CollectionReference collection =
+      FirebaseFirestore.instance.collection('Auctions');
+
+      await collection.doc(documentID).update({'status': 'completed'});
+
+      print('Status updated to Completed successfully');
+    } catch (e) {
+      print('Error updating status: $e');
     }
   }
 
@@ -116,6 +173,7 @@ class FirestoreService {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('Auctions')
           .where('type', isEqualTo: productType)
+          .where('status', isEqualTo: 'running')
           .get();
 
       List<Map<String, dynamic>> productList = querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
@@ -136,6 +194,26 @@ class FirestoreService {
       return productList;
     } catch (e) {
       print("Error fetching products: $e");
+      return [];
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchBidsForProduct(String productID) async {
+    try {
+      final CollectionReference bidsCollection =
+      FirebaseFirestore.instance.collection('Bids');
+
+      QuerySnapshot snapshot =
+      await bidsCollection.where('product-id', isEqualTo: productID).get();
+
+      List<Map<String, dynamic>> bids = [];
+      snapshot.docs.forEach((doc) {
+        bids.add(doc.data() as Map<String, dynamic>);
+      });
+
+      return bids;
+    } catch (e) {
+      print('Error fetching bids: $e');
       return [];
     }
   }

@@ -126,9 +126,9 @@ class _MyPageViewState extends State<MyPageView> {
                               ),
                             ),
                             Text(
-                              "\$${productData['minimumBidPrice']}",
+                              "min. \$${productData['minimumBidPrice']}",
                               style: TextStyle(
-                                fontSize: 18,
+                                fontSize: 14,
                                 color: AppColor.primary.withOpacity(0.85),
                                 fontWeight: FontWeight.bold,
                               ),
@@ -171,6 +171,7 @@ class _MyPageViewState extends State<MyPageView> {
                             price: productData['minimumBidPrice'],
                             author: productData['posted-by'],
                             desc: productData['description'],
+                            email: productData['Poster_email'],
                             time: productData['BiddingEnd'].toDate(),
                           ),
                         ),

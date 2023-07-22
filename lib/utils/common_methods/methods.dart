@@ -10,7 +10,7 @@ class CommonMethods {
     Fluttertoast.showToast(
       msg: msg,
       toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.BOTTOM,
+      gravity: ToastGravity.TOP,
       backgroundColor: AppColor.secondary,
       textColor: Colors.black,
       fontSize: 16.0,
@@ -35,6 +35,15 @@ class CommonMethods {
       return 'Ending Today';
     } else {
       return 'Ended';
+    }
+  }
+
+  Duration calculateRemainingTime(DateTime futureTime) {
+    DateTime currentTime = DateTime.now();
+    if (futureTime.isBefore(currentTime)) {
+      return Duration.zero;
+    } else {
+      return futureTime.difference(currentTime);
     }
   }
 

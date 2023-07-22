@@ -1,5 +1,11 @@
 import 'package:auctionapp/const/colors.dart';
+import 'package:auctionapp/const/shared_preferences.dart';
+import 'package:auctionapp/screens/product_page.dart';
+import 'package:auctionapp/utils/common_methods/methods.dart';
+import 'package:auctionapp/utils/server/Firebase_store_fetch.dart';
+import 'package:auctionapp/widgets/bidding_list_view.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:slide_countdown/slide_countdown.dart';
 
 class ProductPage extends StatefulWidget {
@@ -8,14 +14,16 @@ class ProductPage extends StatefulWidget {
   final String price;
   final String author;
   final String desc;
+  final String email;
   final DateTime time;
   const ProductPage(
       {required this.image,
       required this.name,
       required this.price,
       required this.author,
-        required this.desc,
-        required this.time,
+      required this.desc,
+      required this.email,
+      required this.time,
       Key? key})
       : super(key: key);
 
@@ -24,6 +32,35 @@ class ProductPage extends StatefulWidget {
 }
 
 class _ProductPageState extends State<ProductPage> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String? _numberInput;
+  bool _isAuctionCompleted = false;
+
+  CommonMethods methods = CommonMethods();
+  FirestoreService firestoreService = FirestoreService();
+  final String? userEmail = SharedPreferenceHelper().getEmail();
+  final String? userName = SharedPreferenceHelper().getUserName();
+  final String? balance = SharedPreferenceHelper().getBalance();
+  late String? productId = widget.name + "-" + userEmail!;
+
+  late Duration dateTime = methods.calculateRemainingTime(widget.time);
+
+  @override
+  void initState() {
+    super.initState();
+    _checkAuctionStatus();
+  }
+
+  void _checkAuctionStatus() {
+    DateTime currentTime = DateTime.now();
+    if (currentTime.isAfter(widget.time)) {
+      firestoreService
+          .updateStatusToCompleted(widget.name + "-" + widget.email);
+      setState(() {
+        _isAuctionCompleted = true;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +149,7 @@ class _ProductPageState extends State<ProductPage> {
               Row(
                 children: [
                   Text(
-                    "Minimum Bid Price: ",
+                    "Current Min. Bid Price: ",
                     style: TextStyle(color: Colors.white),
                   ),
                   SizedBox(
@@ -139,7 +176,8 @@ class _ProductPageState extends State<ProductPage> {
               ),
               InkWell(
                 onTap: () {
-                  buildShowModalBottomSheet(context, widget.time);
+                  buildShowModalBottomSheet(
+                      context, widget.time, widget.author);
                 },
                 child: Container(
                   height: 50,
@@ -161,6 +199,38 @@ class _ProductPageState extends State<ProductPage> {
               SizedBox(
                 height: 15,
               ),
+              if (_isAuctionCompleted)
+                Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: AppColor.secondary,
+                        border: Border.all(width: 1, color: AppColor.secondary),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Icon(Icons.celebration_outlined),
+                          Text(
+                            "Winner: Turjha Podder",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Icon(Icons.celebration_outlined)
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                  ],
+                ),
               Text(
                 "Other Biddings",
                 style: TextStyle(
@@ -171,7 +241,9 @@ class _ProductPageState extends State<ProductPage> {
               SizedBox(
                 height: 15,
               ),
-              BidderListView()
+              BidderListView(
+                productID: productId!,
+              )
             ],
           ),
         ),
@@ -179,89 +251,115 @@ class _ProductPageState extends State<ProductPage> {
     );
   }
 
-  Future<dynamic> buildShowModalBottomSheet(BuildContext context, DateTime time) {
+  Future<dynamic> buildShowModalBottomSheet(
+      BuildContext context, DateTime time, String bidderName) {
     return showModalBottomSheet(
-                  backgroundColor: Colors.transparent,
-                    context: context,
-                    builder: (BuildContext context) {
-                      return Container(
-                        height: 300,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(30),
-                                topRight: Radius.circular(30)),
-                        color: AppColor.secondary),
-                        child: Padding(
-                          padding: const EdgeInsets.all(15.0),
-                          child: Column(
-                            children: [
-                                SizedBox(
-                                  height: 20,
-                                ),
-                              SlideCountdown(
-                                textStyle: TextStyle(fontSize: 26, color: Colors.white, fontWeight: FontWeight.bold),
-                                separatorType: SeparatorType.symbol,
-                                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-                                duration: Duration(days: time.day,
-                                hours: time.hour,
-                                minutes: time.minute,
-                                seconds: time.second),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(30)),
-                                  color: AppColor.primary,
-                                ),
-                              )
-                            ],
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            height: 300,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30)),
+                color: AppColor.secondary),
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    "Time Remaining",
+                  ),
+                  SlideCountdown(
+                    textStyle: TextStyle(
+                        fontSize: 26,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold),
+                    separatorType: SeparatorType.symbol,
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                    duration: Duration(
+                        days: dateTime.inDays,
+                        hours: dateTime.inHours,
+                        minutes: dateTime.inMinutes,
+                        seconds: dateTime.inSeconds),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(30)),
+                      color: AppColor.primary,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Text(
+                    "Enter Amount",
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        TextFormField(
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            labelText: 'Enter a Number',
                           ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter a number.';
+                            }
+                            return null;
+                          },
+                          onSaved: (value) {
+                            _numberInput = value;
+                          },
                         ),
-                      );
-                    });
-  }
-}
+                        SizedBox(height: 16),
+                        InkWell(
+                          onTap: () {
+                            if (widget.email == userEmail) {
+                              methods.showSimpleToast(
+                                  "You can't Place Bid On your Own Listed Item");
+                            } else {
+                              if (_formKey.currentState!.validate()) {
+                                _formKey.currentState!.save();
+                                firestoreService.placeBid(productId!, userName!,
+                                    _numberInput!, balance!);
+                                Navigator.pop(context);
 
-class BidderListView extends StatelessWidget {
-  const BidderListView({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.separated(
-      shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      itemCount: 2,
-      separatorBuilder: (context, index) => Divider(
-        color: Colors.white,
-      ),
-      itemBuilder: (context, index) {
-        return ListTile(
-          leading: CircleAvatar(
-            backgroundColor: AppColor.green,
-            child: Icon(
-              Icons.person,
-              color: AppColor.primary,
+                                setState(() {});
+                              }
+                            }
+                          },
+                          child: Container(
+                            width: 120,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: AppColor.primary,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: Center(
+                                child: Text(
+                              "Confirm Bid",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold),
+                            )),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          title: Text(
-            'Turjha Podder',
-            style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold),
-          ),
-          subtitle: Text(
-            '12-22-2024',
-            style: TextStyle(color: AppColor.secondary, fontSize: 10),
-          ),
-          trailing: Text(
-            '\$180',
-            style: TextStyle(
-                color: AppColor.secondary,
-                fontSize: 16,
-                fontWeight: FontWeight.bold),
-          ),
-        );
-      },
-    );
+          );
+        });
   }
 }
