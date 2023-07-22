@@ -28,6 +28,8 @@ class CommonMethods {
   }
 
 
+
+
   String getRemainingStatus(int daysRemaining) {
     if (daysRemaining > 1) {
       return '$daysRemaining days remain';

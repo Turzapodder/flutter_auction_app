@@ -1,11 +1,9 @@
 import 'package:auctionapp/const/colors.dart';
 import 'package:auctionapp/const/shared_preferences.dart';
-import 'package:auctionapp/screens/product_page.dart';
 import 'package:auctionapp/utils/common_methods/methods.dart';
 import 'package:auctionapp/utils/server/Firebase_store_fetch.dart';
 import 'package:auctionapp/widgets/bidding_list_view.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:slide_countdown/slide_countdown.dart';
 
 class ProductPage extends StatefulWidget {
@@ -41,25 +39,36 @@ class _ProductPageState extends State<ProductPage> {
   final String? userEmail = SharedPreferenceHelper().getEmail();
   final String? userName = SharedPreferenceHelper().getUserName();
   final String? balance = SharedPreferenceHelper().getBalance();
-  late String? productId = widget.name + "-" + userEmail!;
+  late String? productId = "${widget.name}-${widget.email}";
 
   late Duration dateTime = methods.calculateRemainingTime(widget.time);
-
+  late String minBidPrice;
+  String? winner;
   @override
   void initState() {
     super.initState();
     _checkAuctionStatus();
+    minBidPrice=widget.price;
+    updateWinner();
   }
 
   void _checkAuctionStatus() {
     DateTime currentTime = DateTime.now();
     if (currentTime.isAfter(widget.time)) {
       firestoreService
-          .updateStatusToCompleted(widget.name + "-" + widget.email);
+          .updateStatusToCompleted(productId!);
       setState(() {
         _isAuctionCompleted = true;
       });
     }
+  }
+
+  Future<void> updateWinner() async {
+    String? winner = await firestoreService
+        .updateStatusToCompleted(productId!);
+    setState(() {
+      this.winner = winner;
+    });
   }
 
   @override
@@ -163,12 +172,12 @@ class _ProductPageState extends State<ProductPage> {
                         borderRadius: BorderRadius.circular(30)),
                     child: Center(
                       child: Text(
-                        "\$${widget.price}",
+                        "\$$minBidPrice",
                         style: TextStyle(
                             color: Colors.black, fontWeight: FontWeight.bold),
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
               SizedBox(
@@ -212,10 +221,10 @@ class _ProductPageState extends State<ProductPage> {
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children:  [
                           Icon(Icons.celebration_outlined),
                           Text(
-                            "Winner: Turjha Podder",
+                            "Winner: $winner",
                             style: TextStyle(
                               color: Colors.black,
                               fontSize: 18,
@@ -327,11 +336,25 @@ class _ProductPageState extends State<ProductPage> {
                             } else {
                               if (_formKey.currentState!.validate()) {
                                 _formKey.currentState!.save();
-                                firestoreService.placeBid(productId!, userName!,
-                                    _numberInput!, balance!);
-                                Navigator.pop(context);
-
-                                setState(() {});
+                                double biddingPrice = double.parse(_numberInput!);
+                                double currentPrice = double.parse(widget.price);
+                                if (biddingPrice < currentPrice) {
+                                  methods.showSimpleToast(
+                                      "You can't Place Bid less than current Value"
+                                  );
+                                }
+                                else {
+                                  firestoreService.placeBid(
+                                      productId!,
+                                      userName!,
+                                      _numberInput!,
+                                      balance!
+                                  );
+                                  Navigator.pop(context);
+                                  setState(() {
+                                    minBidPrice=biddingPrice.toString();
+                                  });
+                                }
                               }
                             }
                           },

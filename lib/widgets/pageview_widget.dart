@@ -102,7 +102,9 @@ class _MyPageViewState extends State<MyPageView> {
                           color: AppColor.primary,
                           borderRadius: BorderRadius.circular(30),
                         ),
-                            child: Text(msg, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),),
+                            child: Text(
+                              productData['status']=="completed"?
+                              "Ended":msg, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),),
                       ))
                     ],
                   ),
@@ -168,7 +170,7 @@ class _MyPageViewState extends State<MyPageView> {
                           builder: (context) => ProductPage(
                             image: productData['productPhotoUrl'],
                             name: productData['product_name'],
-                            price: productData['minimumBidPrice'],
+                            price: productData['currentBid'],
                             author: productData['posted-by'],
                             desc: productData['description'],
                             email: productData['Poster_email'],

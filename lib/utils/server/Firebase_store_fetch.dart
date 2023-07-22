@@ -50,6 +50,7 @@ class FirestoreService {
         'status': 'running',
         'productPhotoUrl': productPicUrl,
         'winner': 'none',
+        'currentBid': min_price,
       });
       methods.showSimpleToast("Your Product has been Uploaded");
 
@@ -83,8 +84,11 @@ class FirestoreService {
 
         final CollectionReference bidsCollection =
         FirebaseFirestore.instance.collection('Bids');
+        final CollectionReference auctionCollection =
+        FirebaseFirestore.instance.collection('Auctions');
 
         DocumentReference newBidDocRef = bidsCollection.doc();
+        String bidID = newBidDocRef.id;
 
         Map<String, dynamic> bidData = {
           'product-id': productID,
@@ -99,26 +103,64 @@ class FirestoreService {
 
         SharedPreferenceHelper().saveBalance2(remainingBalance.toString());
 
+        await FirebaseFirestore.instance.runTransaction((transaction) async {
+          DocumentReference auctionDocRef = auctionCollection.doc(productID);
+          DocumentSnapshot auctionSnapshot = await transaction.get(auctionDocRef);
+          double currentBid = double.parse(auctionSnapshot.get('currentBid') ?? '0');
+          if (bidAmount > currentBid) {
+            transaction.update(auctionDocRef, {'currentBid': bidAmount.toString()});
+          }
+        });
+
       } else {
-        methods.showSimpleToast('Bidding price is greater than the available balance.');
+        methods.showSimpleToast(
+            'Bidding price is greater than the available balance.');
       }
     } catch (e) {
       print('Error placing bid: $e');
     }
   }
 
-  Future<void> updateStatusToCompleted(String documentID) async {
+
+  Future<String?> updateStatusToCompleted(String documentID) async {
     try {
-      final CollectionReference collection =
+      final CollectionReference auctionsCollection =
       FirebaseFirestore.instance.collection('Auctions');
+      final CollectionReference bidsCollection =
+      FirebaseFirestore.instance.collection('Bids');
 
-      await collection.doc(documentID).update({'status': 'completed'});
+      QuerySnapshot bidsSnapshot =
+      await bidsCollection.where('product-id', isEqualTo: documentID).get();
 
-      print('Status updated to Completed successfully');
+      double highestBidPrice = 0;
+      String winner = '';
+
+
+      for (var bidDoc in bidsSnapshot.docs) {
+        double bidPrice = bidDoc['Bidding_price'];
+        if (bidPrice > highestBidPrice) {
+          highestBidPrice = bidPrice;
+          winner = bidDoc['Bidder_name'];
+        }
+      }
+
+      if (highestBidPrice > 0) {
+        await auctionsCollection.doc(documentID).update({
+          'status': 'completed',
+          'winner': winner,
+        });
+
+        print('Status updated to Completed successfully');
+        return winner;
+      } else {
+        print('No bids found for the documentID');
+      }
     } catch (e) {
       print('Error updating status: $e');
     }
   }
+
+
 
   Future<List<Map<String, dynamic>>> fetchProductsAll() async {
     try {
@@ -150,11 +192,11 @@ class FirestoreService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> fetchProductsByWinner(String userEmail) async {
+  Future<List<Map<String, dynamic>>> fetchProductsByWinner(String userName) async {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('Auctions')
-          .where('winner', isEqualTo: userEmail)
+          .where('winner', isEqualTo: userName)
           .get();
 
       List<Map<String, dynamic>> productList =

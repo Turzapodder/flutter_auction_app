@@ -7,9 +7,9 @@ import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Required for Firebase initialization
+  WidgetsFlutterBinding.ensureInitialized();
   await SharedPreferenceHelper().initialize();
-  await Firebase.initializeApp(); // Initialize Firebase
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 

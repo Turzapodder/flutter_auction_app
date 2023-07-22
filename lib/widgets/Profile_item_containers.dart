@@ -87,7 +87,7 @@ class PostedContainer extends StatelessWidget {
 
 class OwnedContainer extends StatelessWidget {
   FirestoreService firestoreFetch = FirestoreService();
-  final String? userEmail = SharedPreferenceHelper().getEmail();
+  final String? userName = SharedPreferenceHelper().getUserName();
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -98,7 +98,7 @@ class OwnedContainer extends StatelessWidget {
           border: Border.all(width: 2, color: AppColor.green),
         ),
         child: FutureBuilder<List<Map<String, dynamic>>>(
-          future: firestoreFetch.fetchProductsByWinner(userEmail!), // Replace with the user's email
+          future: firestoreFetch.fetchProductsByWinner(userName!), // Replace with the user's email
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(
