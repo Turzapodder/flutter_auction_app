@@ -15,7 +15,9 @@ class BidderListView extends StatelessWidget {
       future: firestoreService.fetchBidsForProduct(productID),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
+          return Center(child: CircularProgressIndicator(
+            color: AppColor.green,
+          ));
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else if (snapshot.hasData) {

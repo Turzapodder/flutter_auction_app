@@ -4,11 +4,7 @@ import 'package:auctionapp/const/colors.dart';
 import 'package:auctionapp/const/shared_preferences.dart';
 import 'package:auctionapp/utils/common_widgets/textfield_widget.dart';
 import 'package:auctionapp/utils/server/Firebase_store_fetch.dart';
-import 'package:auctionapp/widgets/page_container.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AddItem extends StatefulWidget {

@@ -6,6 +6,8 @@ import 'package:auctionapp/widgets/bidding_list_view.dart';
 import 'package:flutter/material.dart';
 import 'package:slide_countdown/slide_countdown.dart';
 
+import '../widgets/product_page_widgets.dart';
+
 class ProductPage extends StatefulWidget {
   final String image;
   final String name;
@@ -14,16 +16,17 @@ class ProductPage extends StatefulWidget {
   final String desc;
   final String email;
   final DateTime time;
-  const ProductPage(
-      {required this.image,
-      required this.name,
-      required this.price,
-      required this.author,
-      required this.desc,
-      required this.email,
-      required this.time,
-      Key? key})
-      : super(key: key);
+
+  const ProductPage({
+    required this.image,
+    required this.name,
+    required this.price,
+    required this.author,
+    required this.desc,
+    required this.email,
+    required this.time,
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<ProductPage> createState() => _ProductPageState();
@@ -33,43 +36,46 @@ class _ProductPageState extends State<ProductPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String? _numberInput;
   bool _isAuctionCompleted = false;
-
   CommonMethods methods = CommonMethods();
   FirestoreService firestoreService = FirestoreService();
   final String? userEmail = SharedPreferenceHelper().getEmail();
   final String? userName = SharedPreferenceHelper().getUserName();
   final String? balance = SharedPreferenceHelper().getBalance();
   late String? productId = "${widget.name}-${widget.email}";
-
-  late Duration dateTime = methods.calculateRemainingTime(widget.time);
+  late Duration dateTime;
   late String minBidPrice;
   String? winner;
+
   @override
   void initState() {
     super.initState();
+    dateTime = methods.calculateRemainingTime(widget.time);
     _checkAuctionStatus();
-    minBidPrice=widget.price;
-    updateWinner();
+    minBidPrice = widget.price;
   }
 
   void _checkAuctionStatus() {
     DateTime currentTime = DateTime.now();
     if (currentTime.isAfter(widget.time)) {
-      firestoreService
-          .updateStatusToCompleted(productId!);
+      firestoreService.updateStatusToCompleted("${widget.name}-${widget.email}");
       setState(() {
         _isAuctionCompleted = true;
       });
+      updateWinner();
     }
   }
 
+
+
   Future<void> updateWinner() async {
-    String? winner = await firestoreService
-        .updateStatusToCompleted(productId!);
+    String? winner =
+    await firestoreService.updateStatusToCompleted("${widget.name}-${widget.email}");
     setState(() {
       this.winner = winner;
     });
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -100,159 +106,44 @@ class _ProductPageState extends State<ProductPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(30)),
-                child: SizedBox(
-                  width: 350,
-                  height: 280,
-                  child: Image.network(
-                    widget.image,
-                    height: 200,
-                    width: 300,
-                    fit: BoxFit.cover,
-                  ),
-                ),
+              ProductImageWidget(image: widget.image),
+              SizedBox(height: 20),
+              ProductDetailsWidget(
+                name: widget.name,
+                description: widget.desc,
+                author: widget.author,
               ),
-              SizedBox(
-                height: 20,
-              ),
-              Text(
-                widget.name,
-                style: TextStyle(
-                    fontSize: 22,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                "Product Description: ",
-                style: TextStyle(color: AppColor.secondary),
-              ),
-              Text(
-                widget.desc,
-                style: TextStyle(color: Colors.white),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 3,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Row(
-                children: [
-                  Text(
-                    "@${widget.author}",
-                    style: TextStyle(color: AppColor.secondary),
-                  ),
-                  Icon(
-                    Icons.verified,
-                    color: AppColor.green,
-                    size: 14,
-                  )
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Row(
-                children: [
-                  Text(
-                    "Current Min. Bid Price: ",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Container(
-                    height: 30,
-                    width: 100,
-                    decoration: BoxDecoration(
-                        color: AppColor.secondary,
-                        borderRadius: BorderRadius.circular(30)),
-                    child: Center(
-                      child: Text(
-                        "\$$minBidPrice",
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              InkWell(
+              SizedBox(height: 10),
+              BidPriceWidget(minBidPrice: minBidPrice),
+              SizedBox(height: 20),
+
+              winner==null?
+              PlaceBidButtonWidget(
                 onTap: () {
-                  buildShowModalBottomSheet(
-                      context, widget.time, widget.author);
+                  buildShowModalBottomSheet(context, widget.time, widget.author);
                 },
-                child: Container(
-                  height: 50,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                      color: AppColor.green,
-                      borderRadius: BorderRadius.circular(30)),
-                  child: Center(
-                    child: Text(
-                      "Place a Bid",
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20),
-                    ),
-                  ),
+              ):Container(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.grey,
+                  border: Border.all(width: 1, color: AppColor.secondary),
+                  borderRadius: BorderRadius.circular(30),
                 ),
+                child: Center(child: Text("Auction Ended", style: TextStyle(
+                  color: Colors.black45,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,),),),
               ),
-              SizedBox(
-                height: 15,
-              ),
+              SizedBox(height: 15),
               if (_isAuctionCompleted)
-                Column(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: AppColor.secondary,
-                        border: Border.all(width: 1, color: AppColor.secondary),
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children:  [
-                          Icon(Icons.celebration_outlined),
-                          Text(
-                            "Winner: $winner",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Icon(Icons.celebration_outlined)
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                  ],
-                ),
+                WinnerWidget(winner: winner),
               Text(
                 "Other Biddings",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20),
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
               ),
-              SizedBox(
-                height: 15,
-              ),
-              BidderListView(
-                productID: productId!,
-              )
+              SizedBox(height: 15),
+              BidderListView(productID: productId!),
             ],
           ),
         ),
@@ -368,12 +259,12 @@ class _ProductPageState extends State<ProductPage> {
                             ),
                             child: Center(
                                 child: Text(
-                              "Confirm Bid",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold),
-                            )),
+                                  "Confirm Bid",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                )),
                           ),
                         )
                       ],
@@ -386,3 +277,5 @@ class _ProductPageState extends State<ProductPage> {
         });
   }
 }
+
+

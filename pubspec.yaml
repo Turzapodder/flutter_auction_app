@@ -47,6 +47,7 @@ dependencies:
   fluttertoast: ^8.2.2
   slide_countdown: ^0.6.0
   intl: ^0.17.0
+  fl_chart: ^0.63.0
 
 
 dev_dependencies:

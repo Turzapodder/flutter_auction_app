@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:auctionapp/const/colors.dart';
 import 'package:auctionapp/const/shared_preferences.dart';
 import 'package:auctionapp/widgets/page_container.dart';
 import 'package:flutter/material.dart';
@@ -13,9 +12,7 @@ class FirestoreService {
   CommonMethods methods = CommonMethods();
 
 
-
-  Future<void> uploadAuctionData(
-      BuildContext context,
+  Future<void> uploadAuctionData(BuildContext context,
       String product_name,
       String type,
       String min_price,
@@ -23,13 +20,13 @@ class FirestoreService {
       String desc,
       String author,
       String author_email,
-      File photo,
-      ) async {
+      File photo,) async {
     try {
       final storage = FirebaseStorage.instance;
       final storageRef = storage.ref();
 
-      final photo1Ref = storageRef.child('AuctionProduct/$product_name - $author/Product.jpg');
+      final photo1Ref = storageRef.child(
+          'AuctionProduct/$product_name - $author/Product.jpg');
       final uploadTask1 = await photo1Ref.putFile(photo);
 
       final productPicUrl = await uploadTask1.ref.getDownloadURL();
@@ -59,18 +56,15 @@ class FirestoreService {
         MaterialPageRoute(builder: (context) => PageContainer()),
             (Route<dynamic> route) => false,
       );
-
     } catch (e) {
       print('Error uploading auction data: $e');
     }
   }
 
-  Future<void> placeBid(
-      String productID,
+  Future<void> placeBid(String productID,
       String bidderName,
       String biddingPrice,
-      String balance,
-      ) async {
+      String balance,) async {
     try {
       double bidAmount = double.parse(biddingPrice);
       double currentBalance = double.parse(balance);
@@ -105,13 +99,15 @@ class FirestoreService {
 
         await FirebaseFirestore.instance.runTransaction((transaction) async {
           DocumentReference auctionDocRef = auctionCollection.doc(productID);
-          DocumentSnapshot auctionSnapshot = await transaction.get(auctionDocRef);
-          double currentBid = double.parse(auctionSnapshot.get('currentBid') ?? '0');
+          DocumentSnapshot auctionSnapshot = await transaction.get(
+              auctionDocRef);
+          double currentBid = double.parse(
+              auctionSnapshot.get('currentBid') ?? '0');
           if (bidAmount > currentBid) {
-            transaction.update(auctionDocRef, {'currentBid': bidAmount.toString()});
+            transaction.update(
+                auctionDocRef, {'currentBid': bidAmount.toString()});
           }
         });
-
       } else {
         methods.showSimpleToast(
             'Bidding price is greater than the available balance.');
@@ -161,14 +157,14 @@ class FirestoreService {
   }
 
 
-
   Future<List<Map<String, dynamic>>> fetchProductsAll() async {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('Auctions')
           .get();
 
-      List<Map<String, dynamic>> productList = querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+      List<Map<String, dynamic>> productList = querySnapshot.docs.map((
+          doc) => doc.data() as Map<String, dynamic>).toList();
       return productList;
     } catch (e) {
       print("Error fetching products: $e");
@@ -176,7 +172,8 @@ class FirestoreService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> fetchProductsByUserEmail(String userEmail) async {
+  Future<List<Map<String, dynamic>>> fetchProductsByUserEmail(
+      String userEmail) async {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('Auctions')
@@ -184,7 +181,8 @@ class FirestoreService {
           .get();
 
       List<Map<String, dynamic>> productList =
-      querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+      querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
       return productList;
     } catch (e) {
       print("Error fetching products: $e");
@@ -192,7 +190,8 @@ class FirestoreService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> fetchProductsByWinner(String userName) async {
+  Future<List<Map<String, dynamic>>> fetchProductsByWinner(
+      String userName) async {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('Auctions')
@@ -200,7 +199,8 @@ class FirestoreService {
           .get();
 
       List<Map<String, dynamic>> productList =
-      querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+      querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
       return productList;
     } catch (e) {
       print("Error fetching products: $e");
@@ -209,8 +209,8 @@ class FirestoreService {
   }
 
 
-
-  Future<List<Map<String, dynamic>>> fetchProductsByType(String productType) async {
+  Future<List<Map<String, dynamic>>> fetchProductsByType(
+      String productType) async {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('Auctions')
@@ -218,13 +218,15 @@ class FirestoreService {
           .where('status', isEqualTo: 'running')
           .get();
 
-      List<Map<String, dynamic>> productList = querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+      List<Map<String, dynamic>> productList = querySnapshot.docs.map((
+          doc) => doc.data() as Map<String, dynamic>).toList();
       return productList;
     } catch (e) {
       print("Error fetching products: $e");
       return [];
     }
   }
+
   Future<List<Map<String, dynamic>>> fetchCompletedProducts() async {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
@@ -232,7 +234,8 @@ class FirestoreService {
           .where('status', isEqualTo: "completed")
           .get();
 
-      List<Map<String, dynamic>> productList = querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+      List<Map<String, dynamic>> productList = querySnapshot.docs.map((
+          doc) => doc.data() as Map<String, dynamic>).toList();
       return productList;
     } catch (e) {
       print("Error fetching products: $e");
@@ -240,7 +243,8 @@ class FirestoreService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> fetchBidsForProduct(String productID) async {
+  Future<List<Map<String, dynamic>>> fetchBidsForProduct(
+      String productID) async {
     try {
       final CollectionReference bidsCollection =
       FirebaseFirestore.instance.collection('Bids');
@@ -260,6 +264,35 @@ class FirestoreService {
     }
   }
 
+  Future<List<double>> getAuctionStats() async {
+    try {
+      final CollectionReference auctionsCollection =
+      FirebaseFirestore.instance.collection('Auctions');
+      final CollectionReference bidsCollection =
+      FirebaseFirestore.instance.collection('Bids');
 
+      QuerySnapshot runningBidsSnapshot =
+      await auctionsCollection.where('status', isEqualTo: 'running').get();
+      int runningCount = runningBidsSnapshot.size;
+
+      QuerySnapshot completedSnap =
+      await auctionsCollection.where('status', isEqualTo: 'completed').get();
+      int completeCount = completedSnap.size;
+
+      double totalValue = 0;
+      completedSnap.docs.forEach((auctionDoc) {
+        double currentBid = double.parse(auctionDoc['currentBid']);
+        totalValue += currentBid;
+      });
+
+      QuerySnapshot totalBidsSnapshot = await bidsCollection.get();
+      int totalBids = totalBidsSnapshot.size;
+
+      return [ totalBids.toDouble(),  runningCount.toDouble(), completeCount.toDouble(), totalValue, ];
+    } catch (e) {
+      print('Error fetching auction stats: $e');
+      return [];
+    }
+  }
 
 }
