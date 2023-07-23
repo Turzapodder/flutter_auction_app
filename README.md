@@ -70,5 +70,5 @@ flutter run
 
 ## Screenshots
 
-![App Screenshot](assets/ss/1.jpeg) ![App Screenshot](assets/ss/2.jpeg)
+[<img src="image.png" width="200" height="400"/>](assets/ss/1.jpeg)
 
