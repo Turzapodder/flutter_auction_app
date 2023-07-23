@@ -82,9 +82,9 @@ flutter run
 [<img src="assets/ss/10.jpeg" width="200" height="400"/>](DashboardScreen)
 
 ## Challenges
-    - Actually, Finding the winner when the auction time ends was the trickiest part because generally, we use cloud functions to automate the script online so that we don't have to do it manually. So, I have written a method to check whenever a user enters a product page it will check the current time and the auction time difference. If the difference is found it will trigger another firebase method to update the auction item status as completed and declare the highest bidder from the list as winner.
-    - I am working in Flutter for a couple of months now, but I didn't make any charts widgets in my apps till now. So, to do that I had to watch lots of youtube videos. Now I can assure you that I can build any type of chart.
-    - Another trivial and important issue for me was the timing and my environment, because I went to my village with my regular laptop so, building the app with a low-powered laptop was quite a hassle and let's not talk about electricity. If these issues were not present I could make this project in two-three days
+- Actually, Finding the winner when the auction time ends was the trickiest part because generally, we use cloud functions to automate the script online so that we don't have to do it manually. So, I have written a method to check whenever a user enters a product page it will check the current time and the auction time difference. If the difference is found it will trigger another firebase method to update the auction item status as completed and declare the highest bidder from the list as winner.
+- I am working in Flutter for a couple of months now, but I didn't make any charts widgets in my apps till now. So, to do that I had to watch lots of youtube videos. Now I can assure you that I can build any type of chart.
+- Another trivial and important issue for me was the timing and my environment, because I went to my village with my regular laptop so, building the app with a low-powered laptop was quite a hassle and let's not talk about electricity. If these issues were not present I could make this project in two-three days
     
 
 
